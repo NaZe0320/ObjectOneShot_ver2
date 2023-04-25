@@ -6,7 +6,7 @@
     <data>
         <variable
             name="keyResult"
-            type="com.objectiveoneshot.objectiveoneshot.data.local.model.KeyResult" />
+            type="com.objectiveoneshot.objectiveoneshot.data.local.model.KeyResultWithTasks" />
     </data>
     <FrameLayout
         android:id="@+id/swipe_layout"
@@ -54,7 +54,7 @@
                 android:background="@null"
                 android:layout_marginHorizontal="8dp"
                 android:layout_marginTop="15dp"
-                android:text="@={keyResult.title}"
+                android:text="@={keyResult.keyResult.title}"
                 android:textSize="16sp"
                 android:textColor="@color/grey_900"
                 android:maxLines="1"
@@ -93,8 +93,8 @@
                 android:layout_marginBottom="4dp"
                 app:rpbBackgroundColor="@color/grey_300"
                 app:rpbCornerRadius="8dp"
-                app:setRoundProgressDrawableColor="@{keyResult.progress}"
-                app:setRoundProgress="@{keyResult.progress}"
+                app:setRoundProgressDrawableColor="@{keyResult.keyResult.progress}"
+                app:setRoundProgress="@{keyResult.keyResult.progress}"
                 app:rpbShowProgressText="false"
                 app:layout_constraintTop_toTopOf="@+id/view_divider"
                 app:layout_constraintStart_toStartOf="parent"
@@ -104,7 +104,7 @@
                 android:id="@+id/tv_progress_percent"
                 android:layout_width="@dimen/progress_text_width"
                 android:layout_height="wrap_content"
-                android:text="@{@string/item_progress_string_format(keyResult.progress)}"
+                android:text="@{@string/item_progress_string_format(keyResult.keyResult.progress)}"
                 android:layout_marginTop="12dp"
                 android:layout_marginHorizontal="8dp"
                 android:layout_marginBottom="11dp"

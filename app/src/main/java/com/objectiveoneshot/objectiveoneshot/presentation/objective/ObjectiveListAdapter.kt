@@ -12,12 +12,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.objectiveoneshot.objectiveoneshot.R
 import com.objectiveoneshot.objectiveoneshot.data.local.model.ObjectiveWithKeyResults
 import com.objectiveoneshot.objectiveoneshot.databinding.ItemObjectiveBinding
-import com.objectiveoneshot.objectiveoneshot.domain.viewmodel.ObjectiveViewModel
+import com.objectiveoneshot.objectiveoneshot.domain.viewmodel.AppViewModel
 import com.objectiveoneshot.objectiveoneshot.util.ItemDiffCallback
 
 class ObjectiveListAdapter(
     private val clickListener: ItemClickListener,
-    private val objectiveViewModel: ObjectiveViewModel
+    private val viewModel: AppViewModel
 ): ListAdapter<ObjectiveWithKeyResults, RecyclerView.ViewHolder>(
     ItemDiffCallback<ObjectiveWithKeyResults>(
         onContentsTheSame = {old, new -> old == new},
@@ -49,17 +49,21 @@ class ObjectiveListAdapter(
              binding.objective = item
              binding.clickListener = clickListener
 
-             when (item.keyResults?.size) { //TODO(추후 여기에 보여줄 KeyResult 를 선택하는 항목도 넣을 수 있음)
+             val list = item.keyResults?.filter { it.progress < 100 }
+             val newList = list?.sortedBy { it.progress }?.reversed()
+             //KeyResult를 완료된 애들은 안보여준다.
+             //KeyResult 진행 중인거 먼저,
+             when (list?.size) { //TODO(추후 여기에 보여줄 KeyResult 를 선택하는 항목도 넣을 수 있음)
                  null, 0 -> {
                      binding.layoutKeyList.visibility = View.GONE
                  }
                  1 -> {
-                     binding.tvKeyResult1.text = item.keyResults[0].title
+                     binding.tvKeyResult1.text = newList?.get(0)?.title
                      binding.tvKeyResult2.visibility = View.GONE
                  }
                  else -> {
-                     binding.tvKeyResult1.text = item.keyResults[0].title
-                     binding.tvKeyResult2.text = item.keyResults[1].title
+                     binding.tvKeyResult1.text = newList?.get(0)?.title
+                     binding.tvKeyResult2.text = newList?.get(1)?.title
                  }
              }
              binding.deleteItemView.setOnClickListener {
@@ -69,7 +73,7 @@ class ObjectiveListAdapter(
                  dialog.show()
                  dialog.findViewById<ImageFilterButton>(R.id.btn_delete_dialog).setOnClickListener {
                      dialog.dismiss()
-                     objectiveViewModel.deleteObjective(item.objective.id)
+                     viewModel.deleteObjective(item.objective.id)
                  }
                  dialog.findViewById<ImageFilterButton>(R.id.btn_cancel_dialog).setOnClickListener {
                      dialog.dismiss()

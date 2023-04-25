@@ -8,21 +8,22 @@ import androidx.lifecycle.lifecycleScope
 import com.objectiveoneshot.objectiveoneshot.R
 import com.objectiveoneshot.objectiveoneshot.databinding.FragmentObjectiveAchieveViewBinding
 import com.objectiveoneshot.objectiveoneshot.domain.type.KeyResultState
-import com.objectiveoneshot.objectiveoneshot.domain.viewmodel.ObjectiveViewModel
+import com.objectiveoneshot.objectiveoneshot.domain.viewmodel.AppViewModel
 import com.objectiveoneshot.objectiveoneshot.presentation.keyresult.KeyResultListUnEditFragment
+import com.objectiveoneshot.objectiveoneshot.presentation.tips.TipsFragment
 import com.objectiveoneshot.objectiveoneshot.util.BindingFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ObjectiveAchieveViewFragment: BindingFragment<FragmentObjectiveAchieveViewBinding>(R.layout.fragment_objective_achieve_view){
 
-    private val objectiveViewModel : ObjectiveViewModel by activityViewModels()
+    private val viewModel : AppViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.lifecycleOwner = this
-        binding.viewmodel = objectiveViewModel
+        binding.viewmodel = viewModel
         init()
     }
 
@@ -36,6 +37,13 @@ class ObjectiveAchieveViewFragment: BindingFragment<FragmentObjectiveAchieveView
         binding.toolBarBackBtn.setOnClickListener {
             parentFragmentManager.popBackStackImmediate()
         }
+        binding.btnHelp.setOnClickListener {
+            parentFragmentManager.beginTransaction().apply {
+                replace(R.id.fl_main, TipsFragment(), "Tips")
+                addToBackStack(null)
+                commit()
+            }
+        }
     }
 
     private lateinit var transaction: FragmentTransaction
@@ -44,7 +52,7 @@ class ObjectiveAchieveViewFragment: BindingFragment<FragmentObjectiveAchieveView
     private val fragment3 = KeyResultListUnEditFragment(KeyResultState.COMPLETE)
 
     private fun setFragment() {
-        objectiveViewModel.initAchieveKeyResultState()
+        viewModel.setKeyResultState(KeyResultState.COMPLETE)
         keyResultStateFragmentSetting()
         transaction = childFragmentManager.beginTransaction()
         transaction.add(R.id.fl_key, fragment1)
@@ -54,7 +62,7 @@ class ObjectiveAchieveViewFragment: BindingFragment<FragmentObjectiveAchieveView
     }
 
     private fun keyResultStateFragmentSetting() {
-        objectiveViewModel.keyResultState.observe(viewLifecycleOwner) {
+        viewModel.keyResultState.observe(viewLifecycleOwner) {
             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
                 when (it) {
                     KeyResultState.BEFORE_PROGRESS -> {
@@ -109,13 +117,13 @@ class ObjectiveAchieveViewFragment: BindingFragment<FragmentObjectiveAchieveView
 
     private fun setFragmentBtn() {
         binding.btnBeforeProgress.setOnClickListener {
-            if (!it.isSelected) objectiveViewModel.setKeyResultState(KeyResultState.BEFORE_PROGRESS)
+            if (!it.isSelected) viewModel.setKeyResultState(KeyResultState.BEFORE_PROGRESS)
         }
         binding.btnOnProgress.setOnClickListener {
-            if (!it.isSelected) objectiveViewModel.setKeyResultState(KeyResultState.ON_PROGRESS)
+            if (!it.isSelected) viewModel.setKeyResultState(KeyResultState.ON_PROGRESS)
         }
         binding.btnComplete.setOnClickListener {
-            if (!it.isSelected) objectiveViewModel.setKeyResultState(KeyResultState.COMPLETE)
+            if (!it.isSelected) viewModel.setKeyResultState(KeyResultState.COMPLETE)
         }
     }
 }

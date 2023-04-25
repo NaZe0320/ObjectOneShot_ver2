@@ -21,4 +21,8 @@ interface ObjectiveRepository {
     suspend fun getObjectiveComplete() : List<Objective>
     suspend fun getObjectiveUnComplete() : List<Objective>
     suspend fun updateObjectiveComplete(objectives: List<Objective>)
+
+    suspend fun insertKeyResultsWithTasks(keyResultsWithTasks: List<KeyResultWithTasks>)
+    suspend fun updateKeyResultsWithTasks(keyResultsWithTasks: List<KeyResultWithTasks>, objectiveId: String)
+
 }

@@ -7,35 +7,35 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.objectiveoneshot.objectiveoneshot.data.local.model.KeyResult
+import com.objectiveoneshot.objectiveoneshot.data.local.model.KeyResultWithTasks
 import com.objectiveoneshot.objectiveoneshot.databinding.ItemKeyResultUneditBinding
-import com.objectiveoneshot.objectiveoneshot.domain.viewmodel.ObjectiveViewModel
+import com.objectiveoneshot.objectiveoneshot.domain.viewmodel.AppViewModel
 import com.objectiveoneshot.objectiveoneshot.presentation.task.TaskListUnEditAdapter
 import com.objectiveoneshot.objectiveoneshot.util.ItemDiffCallback
 
 
 class KeyResultUnEditAdapter(
-    private val objectiveViewModel: ObjectiveViewModel
-): ListAdapter<KeyResult, RecyclerView.ViewHolder>(
-    ItemDiffCallback<KeyResult>(
+    private val viewModel: AppViewModel
+): ListAdapter<KeyResultWithTasks, RecyclerView.ViewHolder>(
+    ItemDiffCallback<KeyResultWithTasks>(
         onContentsTheSame = {old, new -> old == new},
-        onItemsTheSame = {old, new -> old.id == new.id}
+        onItemsTheSame = {old, new -> old.keyResult.id == new.keyResult.id}
     )
 ) {
 
     inner class KeyViewHolder(
         private val binding: ItemKeyResultUneditBinding
     ): RecyclerView.ViewHolder(binding.root) {
-        fun bind(keyResult: KeyResult) {
+        fun bind(keyResult: KeyResultWithTasks) {
             binding.keyResult = keyResult
             binding.executePendingBindings()
-            Log.d("TEST_KeyResultAdapter","KeyResult Id : ${keyResult.id}")
-            val taskListAdapter = TaskListUnEditAdapter(keyResult.id)
+            Log.d("TEST_KeyResultAdapter","KeyResult Id : ${keyResult.keyResult.id}")
+            val taskListAdapter = TaskListUnEditAdapter(keyResult.keyResult.id)
 
             binding.rvTaskList.apply {
                 adapter = taskListAdapter
                 layoutManager = LinearLayoutManager(context)
-                taskListAdapter.submitList(objectiveViewModel.getTaskList(keyResult.id))
+                taskListAdapter.submitList(viewModel.keyResultWithTasks.value?.first { (keyResult.keyResult.id) == it.keyResult.id }?.tasks)
                 //objectiveViewModel 에서 해당 keyResult에 해당하는 TaskList 가져오기
             }
             binding.btnExpand.setOnClickListener {

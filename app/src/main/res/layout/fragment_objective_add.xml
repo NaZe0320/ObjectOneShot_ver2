@@ -10,7 +10,7 @@
             type="com.objectiveoneshot.objectiveoneshot.data.local.model.Objective" />
         <variable
             name="viewmodel"
-            type="com.objectiveoneshot.objectiveoneshot.domain.viewmodel.ObjectiveViewModel" />
+            type="com.objectiveoneshot.objectiveoneshot.domain.viewmodel.AppViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -114,7 +114,7 @@
                     android:textColor="@color/grey_900"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    android:text="@={viewmodel.objective.title}"
+                    android:text="@={viewmodel.objectiveData.title}"
                     android:background="@drawable/shape_rectangle_under_bar_black"
                     android:hint="목표를 입력해주세요"/>
 
@@ -156,8 +156,8 @@
                     android:textColor="@color/grey_900"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    startDate="@{viewmodel.objective.startDate}"
-                    endDate="@{viewmodel.objective.endDate}"
+                    startDate="@{viewmodel.objectiveData.startDate}"
+                    endDate="@{viewmodel.objectiveData.endDate}"
                     android:background="@drawable/shape_rectangle_under_bar_black"
                     tools:text="23.04.08 ~ 23.04.08"/>
             </RelativeLayout>
@@ -199,8 +199,8 @@
                     android:layout_marginVertical="8dp"
                     app:rpbBackgroundColor="@color/grey_300"
                     app:rpbCornerRadius="8dp"
-                    app:setRoundProgressDrawableColor="@{viewmodel.objective.progress}"
-                    app:setRoundProgress="@{viewmodel.objective.progress}"
+                    app:setRoundProgressDrawableColor="@{viewmodel.objectiveData.progress}"
+                    app:setRoundProgress="@{viewmodel.objectiveData.progress}"
                     app:rpbShowProgressText="false"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -214,7 +214,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="10dp"
                     android:gravity="end"
-                    android:text="@{@string/item_progress_string_format(viewmodel.objective.progress)}"
+                    android:text="@{@string/item_progress_string_format(viewmodel.objectiveData.progress)}"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -310,9 +310,11 @@
 
                     <include
                         android:id="@+id/key_add_item"
-                        bind:viewmodel="@{viewmodel}"
+
                         android:visibility="gone"
-                        layout="@layout/item_key_result_add" />
+                        layout="@layout/item_key_result_add"/>
+                    <!--bind:viewmodel="@{viewmodel}" -->
+
 
                     <androidx.constraintlayout.utils.widget.ImageFilterButton
                         android:id="@+id/btn_add_key_result"

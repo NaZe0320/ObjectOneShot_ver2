@@ -14,7 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.objectiveoneshot.objectiveoneshot.R
 import com.objectiveoneshot.objectiveoneshot.databinding.FragmentObjectiveListBinding
-import com.objectiveoneshot.objectiveoneshot.domain.viewmodel.ObjectiveViewModel
+import com.objectiveoneshot.objectiveoneshot.domain.viewmodel.AppViewModel
 import com.objectiveoneshot.objectiveoneshot.presentation.tips.TipsFragment
 import com.objectiveoneshot.objectiveoneshot.util.BindingFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ObjectiveListFragment: BindingFragment<FragmentObjectiveListBinding>(R.layout.fragment_objective_list) {
-    private val objectiveViewModel: ObjectiveViewModel by activityViewModels()
+    private val viewModel: AppViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -33,7 +33,7 @@ class ObjectiveListFragment: BindingFragment<FragmentObjectiveListBinding>(R.lay
 
     private fun setAchieveDialog() {
         lifecycleScope.launch(Dispatchers.Main) {
-            if( objectiveViewModel.checkAchieveComplete() ) {
+            if( viewModel.checkAchieveComplete() ) {
                 val dialog: Dialog = Dialog(requireContext())
                 dialog.setContentView(R.layout.dialog_achieve)
                 dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -52,7 +52,7 @@ class ObjectiveListFragment: BindingFragment<FragmentObjectiveListBinding>(R.lay
             }
         }
         lifecycleScope.launch(Dispatchers.Main) {
-            if ( objectiveViewModel.checkAchieveUnComplete()) {
+            if ( viewModel.checkAchieveUnComplete()) {
                 val dialog: Dialog = Dialog(requireContext())
                 dialog.setContentView(R.layout.dialog_unachieve)
                 dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -76,7 +76,7 @@ class ObjectiveListFragment: BindingFragment<FragmentObjectiveListBinding>(R.lay
     private fun init() {
         binding.btnAddObjective.setOnClickListener {
             parentFragmentManager.beginTransaction().apply {
-                objectiveViewModel.initObjectiveData() //ObjectiveData 빈 값 생성
+                viewModel.initObjectiveData() //ObjectiveData 빈 값 생성
                 replace(R.id.fl_main, ObjectiveAddFragment(),"ObjectiveAdd")
                 addToBackStack(null)
                 commit()
@@ -103,13 +103,13 @@ class ObjectiveListFragment: BindingFragment<FragmentObjectiveListBinding>(R.lay
     @SuppressLint("ClickableViewAccessibility")
     private fun setRecyclerView() {
         val adapterObjective = ObjectiveListAdapter(ObjectiveListAdapter.ItemClickListener {
-            objectiveViewModel.getObjectiveData(it)
+            viewModel.getObjectiveData(it)
             parentFragmentManager.beginTransaction().apply {
                 replace(R.id.fl_main, ObjectiveModifyFragment(), "ObjectiveModify")
                 addToBackStack(null)
                 commit()
             }
-        } ,objectiveViewModel)
+        } ,viewModel)
 
 
         binding.rvObjective.apply {
@@ -117,10 +117,10 @@ class ObjectiveListFragment: BindingFragment<FragmentObjectiveListBinding>(R.lay
             layoutManager = LinearLayoutManager(requireContext())
         }
 
-        objectiveViewModel.getObjectiveList()
+        viewModel.getObjectiveList()
         //가져오기
 
-        objectiveViewModel.objectiveListWithKeyResults.observe(viewLifecycleOwner) {
+        viewModel.objectiveListWithKeyResults.observe(viewLifecycleOwner) {
             Log.d("TEST_observe","$it")
             if (it.isEmpty()) {
                 binding.ivEmptyList.visibility = View.VISIBLE
@@ -134,7 +134,7 @@ class ObjectiveListFragment: BindingFragment<FragmentObjectiveListBinding>(R.lay
         }
 
         binding.srLayout.setOnRefreshListener {
-            objectiveViewModel.getObjectiveList()
+            viewModel.getObjectiveList()
             binding.srLayout.isRefreshing = false
         }
     }

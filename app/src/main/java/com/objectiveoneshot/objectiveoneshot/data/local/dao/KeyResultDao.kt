@@ -39,4 +39,32 @@ interface KeyResultDao {
         updateTask(task)
     }
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertKeyResult(keyResult: KeyResult)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertTask(task: Task)
+
+    @Transaction
+    suspend fun insertKeyResultsWithTasks(keyResultsWithTasks: List<KeyResultWithTasks>) {
+        for (keyResultWithTasks in keyResultsWithTasks) {
+            insertKeyResult(keyResultWithTasks.keyResult)
+
+            for (task in keyResultWithTasks.tasks) {
+                insertTask(task)
+            }
+        }
+    }
+
+    @Transaction
+    suspend fun updateKeyResultsWithTasks(keyResultsWithTasks: List<KeyResultWithTasks>, objectiveId: String) {
+        deleteKeyResultByObjectiveId(objectiveId)
+        for (keyResultWithTasks in keyResultsWithTasks) {
+            insertKeyResult(keyResultWithTasks.keyResult)
+
+            for (task in keyResultWithTasks.tasks) {
+                insertTask(task)
+            }
+        }
+    }
 }

@@ -68,4 +68,12 @@ class ObjectiveRepositoryImpl @Inject constructor(
     override suspend fun updateObjectiveComplete(objectives: List<Objective>) {
         return objectiveDao.updateCompleteObjective(objectives)
     }
+
+    override suspend fun insertKeyResultsWithTasks(keyResultsWithTasks: List<KeyResultWithTasks>) {
+        keyResultDao.insertKeyResultsWithTasks(keyResultsWithTasks)
+    }
+
+    override suspend fun updateKeyResultsWithTasks(keyResultsWithTasks: List<KeyResultWithTasks>, objectiveId: String) {
+        keyResultDao.updateKeyResultsWithTasks(keyResultsWithTasks, objectiveId)
+    }
 }

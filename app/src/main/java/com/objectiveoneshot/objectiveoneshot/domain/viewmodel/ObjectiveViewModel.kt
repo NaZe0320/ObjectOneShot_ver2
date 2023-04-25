@@ -78,8 +78,7 @@ class ObjectiveViewModel @Inject constructor(
 
     fun updateObjective() {
         viewModelScope.launch(Dispatchers.IO) {
-            objectiveRepository.updateObjective(_objective.value!!)
-
+//            objectiveRepository.updateObjective(_objective.value!!)
             val keyResultsList = _keyResultList.value?: mutableListOf()
             val tasksList = _taskList.value?: mutableListOf()
             objectiveRepository.updateKeyResultWithTask(keyResultsList, tasksList, _objective.value!!.id)
@@ -330,6 +329,7 @@ class ObjectiveViewModel @Inject constructor(
             _taskList.value = newList
         }
         Log.d("TEST_ObjectiveViewModel","taskList Add or Update: ${_taskList.value}")
+        changeKeyResultListProgress(task.key_result_id)
     }
 
     fun addNewTaskToTaskData() {
@@ -355,6 +355,7 @@ class ObjectiveViewModel @Inject constructor(
             _newTaskList.value = newList
         }
         Log.d("TEST_Task","taskList Add or Update: ${_newTaskList.value}")
+        changeKeyResultListProgress(task.key_result_id)
     }
 
     /**

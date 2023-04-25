@@ -9,12 +9,12 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.objectiveoneshot.objectiveoneshot.data.local.model.Task
 import com.objectiveoneshot.objectiveoneshot.databinding.ItemTaskBinding
-import com.objectiveoneshot.objectiveoneshot.domain.viewmodel.ObjectiveViewModel
+import com.objectiveoneshot.objectiveoneshot.domain.viewmodel.AppViewModel
 import com.objectiveoneshot.objectiveoneshot.util.ItemDiffCallback
 
 class TaskAddAdapter(
     private val keyResultId: String,
-    private val objectiveViewModel: ObjectiveViewModel
+    private val viewModel: AppViewModel
 ): ListAdapter<Task, RecyclerView.ViewHolder>(
     ItemDiffCallback<Task> (
         onContentsTheSame = {old, new -> old == new},
@@ -26,19 +26,18 @@ class TaskAddAdapter(
         private val binding: ItemTaskBinding,
     ): RecyclerView.ViewHolder(binding.root) {
         init {
-            binding.btnAddTask.setOnClickListener {
-                if (binding.etTaskName.text.toString().isNotEmpty()) {
-                    binding.btnAddTask.visibility = View.GONE
-                    addItem()
-                }
-            }
-            binding.btnDeleteTask.setOnClickListener {
-                binding.etTaskName.text.clear()
-            }
+
         }
 
         fun bind(item: Task) {
             binding.task = item
+
+            binding.btnAddTask.setOnClickListener {
+                if (binding.etTaskName.text.toString().isNotEmpty()) {
+                    binding.btnAddTask.visibility = View.GONE
+                    viewModel.addTask(item.key_result_id)
+                }
+            }
 
             binding.btnDeleteTask.visibility = View.GONE
             when (adapterPosition) {
@@ -61,8 +60,6 @@ class TaskAddAdapter(
                     binding.btnAddTask.visibility = View.GONE
                 } else {
                     if (text.isNotEmpty()) {
-                        addOrUpdateTaskList(item)
-
                         binding.btnDeleteTask.visibility = View.GONE
 
                         if (adapterPosition == itemCount - 1) {
@@ -70,10 +67,10 @@ class TaskAddAdapter(
                         }
                     } else {
                         if (adapterPosition == itemCount - 1) {
-                            deleteItem()
+                            deleteItem(item)
                             notifyItemChanged(adapterPosition - 1)
                         } else {
-                            deleteItem()
+                            deleteItem(item)
                         }
                     }
                 }
@@ -88,24 +85,15 @@ class TaskAddAdapter(
             }
             binding.cbTaskComplete.setOnClickListener {
                 if (binding.etTaskName.text.toString().isNotEmpty()) {
-                    addOrUpdateTaskList(item)
-                    objectiveViewModel.changeKeyResultProgress(keyResultId)
+                    viewModel.setKeyResultProgress(item.key_result_id)
                 } else {
                     binding.cbTaskComplete.isChecked = false
                 }
             }
 
         }
-        private fun addItem() {
-            if (itemCount < 5) {
-                val newTask = Task("",false,keyResultId)
-                submitList(currentList.toMutableList().apply { add(newTask) })
-            }
-        }
-        private fun deleteItem() {
-            deleteTaskList(currentList[adapterPosition])
-            submitList(currentList.toMutableList().apply { removeAt(adapterPosition) })
-            objectiveViewModel.changeKeyResultProgress(keyResultId)
+        private fun deleteItem(item: Task) {
+            viewModel.deleteTask(item.key_result_id, item.id)
             binding.etTaskName.clearFocus()
         }
     }
@@ -129,18 +117,5 @@ class TaskAddAdapter(
         } else {
             super.submitList(list)
         }
-    }
-
-    private fun addOrUpdateTaskList(item: Task) {
-        objectiveViewModel.addOrUpdateNewTaskData(Task(
-            item.content,
-            item.check,
-            item.key_result_id,
-            item.id
-        ))
-    }
-
-    private fun deleteTaskList(item: Task) {
-        objectiveViewModel.deleteNewTaskData(item)
     }
 }
